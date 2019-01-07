@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=1349">
+    <title>HTML5Video</title>
+	<link rel="stylesheet" type="text/css" href="./css/icon.css"/>
+	<link rel="stylesheet" type="text/css" href="./css/style.css"/>
+    <script type='text/javascript' defer src='main.js'></script>
+</head>
+
+<body>
+    <h2>HTML5 Video Player</h2>
+    <div class="left">
+		<div class="controls">
+			<div class="controls-left">
+				<button class="material-icons control-button playBtn" title="play">play_arrow</button>
+				<button class="material-icons control-button stopBtn" title="stop">stop</button>
+				<button class="material-icons control-button playSlowBtn" title="play_slow">navigate_before</button>
+				<span class="playSpeed" title="speed">1</span>
+				<button class="material-icons control-button playFastBtn" title="play_fast">navigate_next</button>
+				<button class="material-icons control-button rewindBtn" title="fast_rewind">fast_rewind</button>
+				<button class="material-icons control-button forwardBtn" title="fast_forward">fast_forward</button>
+				<button class="material-icons control-button previousBtn" title="previous">skip_previous</button>
+				<button class="material-icons control-button nextBtn" title="next">skip_next</button>
+				<button class="material-icons control-button muteBtn" title="mute">volume_up</button>
+				<span class="volume-bar">
+					<span class="volume-slider"></span>
+				</span>
+			</div>
+			<div class="controls-right">
+				<button class="material-icons control-button menuBtn" title="menu">menu</button>
+				<button class="material-icons control-button subtitlesBtn" title="subtitles">subtitles</button>
+				<button class="material-icons control-button settingsBtn" title="settings">settings</button>
+				<button class="material-icons control-button fullscreenBtn" title="fullscreen">fullscreen</button>
+			</div>
+		</div>
+        <div id="progress" class="progress">
+            <div id="bar" class="bar"></div>
+        </div>
+		<div class="link-custom">
+			<input class='link-input' type='text' name='linkUrl' placeholder='input your video link url'/>
+			<button class='link-load'>Load</button>
+			<button class='link-add'>Add to PlayList</button>
+			<button class='playList-load'>Load PlayList</button>
+		</div>
+    </div>
+    <div class="right">
+        <fieldset style='padding-right:0;'>
+            <legend>Logs: 
+					<button class="material-icons log-button logToggle" title="log_on">toggle_off</button>
+					<button class="material-icons log-button clearLogBtn" title="clear">delete_forever</button>
+			</legend>
+            <div class="logs" id="logs"></div>
+        </fieldset>
+
+    </div>
+</body>
+</html>
