@@ -24,16 +24,19 @@
     }
 
     var playList = [
+			{	
+				url: 'http://10.2.68.6:9001/localfile/4K/10-Incredible-4K-Ultra-HD-Videos-YouTube_0.mp4'
+			},
 			{
 				url: 'http://vjs.zencdn.net/v/oceans.mp4',
 				poster: 'img/oceans.png'
 			},
-			{	url: 'http://10.2.68.6:9001/localfile/4K/10-Incredible-4K-Ultra-HD-Videos-YouTube_0.mp4'
-			},
-			{	url:'http://media.w3.org/2010/05/sintel/trailer.mp4',
+			{	
+				url:'http://media.w3.org/2010/05/sintel/trailer.mp4',
 				poster: 'img/SINTEL_poster.jpg'
 			}, 
-			{	url:'http://media.w3.org/2010/05/bunny/trailer.mp4',
+			{	
+				url:'http://media.w3.org/2010/05/bunny/trailer.mp4',
 				poster: 'img/BUNNY_poster.jpg'
 			},
 			{
@@ -86,7 +89,39 @@
             log("Playback finished.");
             end();
         });
-		_player.addEventListener('click', playPause);
+		_player.onerror = function (e) {
+			var target = e.target || e.srcElement;
+			var error = target.error;
+			if (!error) return;
+			var msg = '';
+			switch (error.code) {
+				case 1:
+					msg = 'MEDIA_ERR_ABORTED';
+					break;
+				case 2:
+					msg = 'MEDIA_ERR_NETWORK';
+					break;
+				case 3:
+					msg = 'MEDIA_ERR_DECODE';
+					break;
+				case 4:
+					msg = 'MEDIA_ERR_SRC_NOT_SUPPORTED';
+					break;
+				case 5:
+					msg = 'MEDIA_ERR_ENCRYPTED';
+					break;
+				default:
+					msg = 'UNKNOWN';
+					break;
+			}
+			if (error.message) {
+				msg += ' (' + error.message + ')';
+			}
+			if (error.msExtendedCode) {
+				msg += ' (0x' + (error.msExtendedCode >>> 0).toString(16).toUpperCase() + ')';
+			}
+			log(msg);
+        };
 
         return _player;
     }
@@ -160,24 +195,35 @@
 			return;
 		}
 		if(forwardInterval){
-			controls.seekJump = 5;
+			controls.seekJump = 0;
 			clearInterval(forwardInterval);
+			forwardInterval = null;
 			setPlaybackRate(1);
 			return;
 		}
 		
 		if(rewindInterval){
 			clearInterval(rewindInterval);
+			rewindInterval = null;
 		}
 		setPlaybackRate(0);
+		controls.seekJump += 10;
 		rewindInterval = setInterval(function(){
-			if (!player.seeking && player.currentTime - controls.seekJump > player.seekable.start(0)) {
-				player.currentTime -= controls.seekJump;
+			if (!player.seeking && getValidBufferDuration() > 1) {
+				if (player.currentTime - controls.seekJump < 0) {
+					player.currentTime = 0;
+					clearInterval(rewindInterval);
+					rewindInterval = null;
+					controls.seekJump = 0;
+					setPlaybackRate(1);
+					player.pause();
+				}else {
+					player.currentTime -= controls.seekJump;
+				}
 			}else{
 				return;
 			}
 		}, 1000);
-		controls.seekJump += 5;
 	}
 	
 	// fast forward
@@ -187,26 +233,57 @@
 			return;
 		}
 		if(rewindInterval){
-			controls.seekJump = 5;
+			controls.seekJump = 0;
 			clearInterval(rewindInterval);
+			rewindInterval = null;
 			setPlaybackRate(1);
 			return;
 		}
 		
 		if(forwardInterval){
 			clearInterval(forwardInterval);
+			forwardInterval = null;
 		}
 		setPlaybackRate(0);
+		controls.seekJump += 10;
 		forwardInterval = setInterval(function(){
-			if (!player.seeking && player.currentTime + controls.seekJump < player.seekable.end(0)) {
-				player.currentTime += controls.seekJump;
+			if (!player.seeking && getValidBufferDuration() > 1) {
+				if (player.currentTime + controls.seekJump > player.duration) {
+					player.currentTime = player.duration;
+					clearInterval(forwardInterval);
+					forwardInterval = null;
+					controls.seekJump = 0;
+					setPlaybackRate(1);
+				}else {
+					player.currentTime += controls.seekJump;
+				}
 			}else{
 				return;
 			}
 		}, 1000);
-		controls.seekJump += 5;
 	}
 
+	function getSeekableRange() {
+		var range = { start: 0, end: 0 };
+		for (var i = 0; i < player.seekable.length; i ++) {
+			range.start = player.seekable.start(i);
+			range.end = player.seekable.end(i);
+			break;
+		}
+		return range;
+    }
+	
+	function getValidBufferDuration() {
+        var currentPos = player.currentTime;
+        for (var i = 0; i < player.buffered.length; ++i) {
+            if (currentPos >= player.buffered.start(i) &&
+                currentPos <= player.buffered.end(i)) {
+                return player.buffered.end(i) - currentPos;
+            }
+        }
+        return 0;
+    }
+	
 	function playSlow() {
 		if(player.playbackRate > 1) {
 			setPlaybackRate(1);
@@ -227,11 +304,7 @@
 	
 	function setPlaybackRate(n) {
 		player.playbackRate = n;
-		if(player.playbackRate >= 1) {
-			controls.playSpeed.innerHTML = player.playbackRate;
-		}else {
-			controls.playSpeed.innerHTML = (player.playbackRate).toFixed(1);
-		}
+		controls.playSpeed.innerHTML = (player.playbackRate).toFixed(1);
 	}
 	
 	function seek(event) {
@@ -367,13 +440,14 @@
      */
 	var controls = {
 		init: function () {
+			this.videoContainer = document.querySelector('.video-container');
 			this.controlBar = document.querySelector('.controls');
 			this.playBtn = document.querySelector('.playBtn');
 			this.stopBtn = document.querySelector('.stopBtn');
 			this.playSlowBtn = document.querySelector('.playSlowBtn');
 			this.playSpeed = document.querySelector('.playSpeed');
 			this.playFastBtn = document.querySelector('.playFastBtn');
-			this.seekJump = 5;
+			this.seekJump = 0;
 			this.rewindBtn = document.querySelector('.rewindBtn');
 			this.forwardBtn = document.querySelector('.forwardBtn');
 			this.previousBtn = document.querySelector('.previousBtn');
@@ -382,8 +456,17 @@
 			this.volumeBar = document.querySelector('.volume-bar');
 			this.volumeSlider = document.querySelector('.volume-slider');
 			
+			/* volume bar slide */
 			this.volumeStartX = this.volumeBar.getBoundingClientRect().left;
 			this.volumeMouveX = null;
+			
+			/* play time refresh */
+			this.playTimeTip = document.querySelector('.play-time');
+			this.playTimeInterval = setInterval(this.playTimeRefresh.bind(this), 1000);
+			
+			/* buffer icon */
+			this.bufferingSpinner = document.querySelector('.bufferingSpinner');
+			this.bufferInterval = setInterval(this.bufferControl.bind(this), 1000);
 			
 			this.menuBtn = document.querySelector('.menuBtn');
 			this.subtitlesBtn = document.querySelector('.subtitlesBtn');
@@ -393,6 +476,7 @@
 			this.logToggleBtn = document.querySelector('.logToggle');
 			this.logClearBtn = document.querySelector('.clearLogBtn');
 			
+			this.videoContainer.addEventListener('click', playPause);
 			this.playBtn.addEventListener('click', playPause);
 			this.stopBtn.addEventListener('click', stop);
 			this.playSlowBtn.addEventListener('click', playSlow);
@@ -408,6 +492,39 @@
 			this.logToggleBtn.addEventListener('click', this.logToggle.bind(this));
 			this.logClearBtn.addEventListener('click', this.logClear);
 			
+		},
+		playTimeRefresh: function () {
+			if (player) {
+				var currentT = player.currentTime ? (player.currentTime).toFixed(0) : 0;
+				var durationT = player.duration ? (player.duration).toFixed(0) : 0;
+				var currentTH = Math.floor(currentT/3600);
+				currentTH = currentTH < 10 ? '0'+currentTH : currentTH;
+				var currentTM = Math.floor(currentT/60);
+				currentTM = currentTM < 10 ? '0'+currentTM : currentTM;
+				var currentTS = currentT%60;
+				currentTS = currentTS < 10 ? '0'+currentTS : currentTS;
+				var durationTH = Math.floor(durationT/3600);
+				durationTH = durationTH < 10 ? '0'+durationTH : durationTH;
+				var durationTM = Math.floor(durationT/60);
+				durationTM = durationTM < 10 ? '0'+durationTM : durationTM;
+				var durationTS = durationT%60;
+				durationTS = durationTS < 10 ? '0'+durationTS : durationTS;
+				if (durationT/3600 >= 1) {
+					this.playTimeTip.innerHTML = currentTH + ':' + currentTM + ':' + currentTS +
+						' / ' + durationTH + ':' + durationTM + ':' + durationTS;
+				}else {
+					this.playTimeTip.innerHTML = currentTM + ':' + currentTS + ' / ' + durationTM + ':' + durationTS;
+				}
+			}
+		},
+		bufferControl: function () {
+			if(player) {
+				if(getValidBufferDuration() > 1 || player.ended) {
+					this.bufferingSpinner.style.display = 'none';
+				}else{
+					this.bufferingSpinner.style.display = 'flex';
+				}
+			}
 		},
 		logToggle: function () {
 			logOn = !logOn;
@@ -484,7 +601,7 @@
 		controls.init();
 		custom.init();
         player = createPlayer();
-        document.querySelector('.left').insertAfter(player, progress.dom);
+        document.querySelector('.videoPlayer').appendChild(player);
 		
 		load(playList_[0]);
 		

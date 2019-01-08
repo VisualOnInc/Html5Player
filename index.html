@@ -17,7 +17,7 @@
 				<button class="material-icons control-button playBtn" title="play">play_arrow</button>
 				<button class="material-icons control-button stopBtn" title="stop">stop</button>
 				<button class="material-icons control-button playSlowBtn" title="play_slow">navigate_before</button>
-				<span class="playSpeed" title="speed">1</span>
+				<span class="playSpeed" title="speed">1.0</span>
 				<button class="material-icons control-button playFastBtn" title="play_fast">navigate_next</button>
 				<button class="material-icons control-button rewindBtn" title="fast_rewind">fast_rewind</button>
 				<button class="material-icons control-button forwardBtn" title="fast_forward">fast_forward</button>
@@ -27,6 +27,7 @@
 				<span class="volume-bar">
 					<span class="volume-slider"></span>
 				</span>
+				<span class="play-time">00:00 / 00:00</span>
 			</div>
 			<div class="controls-right">
 				<button class="material-icons control-button menuBtn" title="menu">menu</button>
@@ -38,6 +39,16 @@
         <div id="progress" class="progress">
             <div id="bar" class="bar"></div>
         </div>
+		<div class="video-container">
+			<div class="videoPlayer"></div>
+			<div id="bufferingSpinner" class="bufferingSpinner">
+				<svg class="spinnerSvg" viewBox="25 25 50 50">
+					<circle class="spinnerPath" cx="50" cy="50" r="20"
+					  fill="none" stroke-width="2" stroke-miterlimit="10">
+					</circle>
+				</svg>
+			</div>
+		</div>
 		<div class="link-custom">
 			<input class='link-input' type='text' name='linkUrl' placeholder='input your video link url'/>
 			<button class='link-load'>Load</button>
