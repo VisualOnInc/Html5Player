@@ -462,11 +462,9 @@
 			
 			/* play time refresh */
 			this.playTimeTip = document.querySelector('.play-time');
-			this.playTimeInterval = setInterval(this.playTimeRefresh.bind(this), 1000);
 			
 			/* buffer icon */
 			this.bufferingSpinner = document.querySelector('.bufferingSpinner');
-			this.bufferInterval = setInterval(this.bufferControl.bind(this), 1000);
 			
 			this.menuBtn = document.querySelector('.menuBtn');
 			this.subtitlesBtn = document.querySelector('.subtitlesBtn');
@@ -491,7 +489,11 @@
 			this.fullscreenBtn.addEventListener('click', enterFullscreen);
 			this.logToggleBtn.addEventListener('click', this.logToggle.bind(this));
 			this.logClearBtn.addEventListener('click', this.logClear);
-			
+			this.setListener();
+		},
+		setListener: function () {
+			this.playTimeInterval = setInterval(this.playTimeRefresh.bind(this), 1000);
+			this.bufferInterval = setInterval(this.bufferControl.bind(this), 1000);
 		},
 		playTimeRefresh: function () {
 			if (player) {
