@@ -7,4 +7,4 @@ supported feature:
 3. fast forward, fast rewind
 4. play list
 5. load custom link
-6. logs output
+6. logs output and upload to server
