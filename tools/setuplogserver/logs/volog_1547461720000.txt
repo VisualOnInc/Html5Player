@@ -1,0 +1,8 @@
+Playback started.
+Current time: 0.192819
+Current time: 0.442016
+Current time: 0.693207
+Current time: 0.942358
+Current time: 1.19255
+Current time: 1.442214
+Current time: 1.674984

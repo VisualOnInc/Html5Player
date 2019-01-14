@@ -1,28 +1,8 @@
 (function(){
     'use strict';
     /**
-     * Displays logging information on the screen and in the console.
-     * @param {string} msg - Message to log.
+     * playlist
      */
-	var logOn = false;
-    function log(msg) {
-        var logsEl = document.getElementById('logs');
-
-        if (msg) {
-            // Update logs
-            //console.log('[PlayerHTML5]: ', msg);
-			if (!logOn) {
-				return;
-			}
-            logsEl.innerHTML += msg + '<br />';
-        } else {
-            // Clear logs
-            logsEl.innerHTML = '';
-        }
-
-        logsEl.scrollTop = logsEl.scrollHeight;
-    }
-
     var playList = [
 			{	
 				url: 'http://10.2.68.6:9001/localfile/4K/10-Incredible-4K-Ultra-HD-Videos-YouTube_0.mp4'
@@ -66,27 +46,27 @@
         _player.controls = false;
 		
         _player.addEventListener('loadeddata', function () {
-            log("Movie loaded.");
+            controls.log("Movie loaded.");
         });
         _player.addEventListener('loadedmetadata', function () {
-            log("Meta data loaded.");
+            controls.log("Meta data loaded.");
         });
         _player.addEventListener('timeupdate', function () {
-            log("Current time: " + _player.currentTime);
+            controls.log("Current time: " + _player.currentTime);
             progress.updateProgress(_player.currentTime, _player.duration);
         });
         _player.addEventListener('play', function () {
-            log("Playback started.");
+            controls.log("Playback started.");
 			controls.playBtn.innerHTML = "pause";
 			controls.playBtn.title = "pause";
         });
         _player.addEventListener('pause', function () {
-            log("Playback paused.");
+            controls.log("Playback paused.");
 			controls.playBtn.innerHTML = "play_arrow";
 			controls.playBtn.title = "play";
         });
         _player.addEventListener('ended', function () {
-            log("Playback finished.");
+            controls.log("Playback finished.");
             end();
         });
 		_player.onerror = function (e) {
@@ -120,7 +100,7 @@
 			if (error.msExtendedCode) {
 				msg += ' (0x' + (error.msExtendedCode >>> 0).toString(16).toUpperCase() + ')';
 			}
-			log(msg);
+			controls.log(msg);
         };
 
         return _player;
@@ -130,7 +110,7 @@
      * Stop the player when application is closed.
      */
     function onUnload() {
-    	log('onUnload');
+    	controls.log('onUnload');
         stop();
     }
 
@@ -471,8 +451,13 @@
 			this.settingsBtn = document.querySelector('.settingsBtn');
 			this.fullscreenBtn = document.querySelector('.fullscreenBtn');
 			
+			this.logOn = false;
+			this.logArr = [];
+			this.logsArea = document.getElementById('logs');
 			this.logToggleBtn = document.querySelector('.logToggle');
 			this.logClearBtn = document.querySelector('.clearLogBtn');
+			this.logUploadBtn = document.querySelector('.logUpload');
+			this.logServer = document.querySelector('.logServer');
 			
 			this.videoContainer.addEventListener('click', playPause);
 			this.playBtn.addEventListener('click', playPause);
@@ -488,7 +473,8 @@
 			this.volumeSlider.addEventListener('mousedown', volumerSlider);
 			this.fullscreenBtn.addEventListener('click', enterFullscreen);
 			this.logToggleBtn.addEventListener('click', this.logToggle.bind(this));
-			this.logClearBtn.addEventListener('click', this.logClear);
+			this.logClearBtn.addEventListener('click', this.logClear.bind(this));
+			this.logUploadBtn.addEventListener('click', this.logUpload.bind(this));
 			this.setListener();
 		},
 		setListener: function () {
@@ -528,9 +514,23 @@
 				}
 			}
 		},
+		log: function (msg) {
+			if (msg) {
+				if (!this.logOn) {
+					return;
+				}
+				this.logsArea.innerHTML += msg + '<br />';
+				this.logArr.push(msg+'\n');
+			} else {
+				// Clear logs
+				this.logsArea.innerHTML = '';
+				this.logArr = [];
+			}
+			this.logsArea.scrollTop = this.logsArea.scrollHeight;
+		},
 		logToggle: function () {
-			logOn = !logOn;
-			if (logOn) {
+			this.logOn = !this.logOn;
+			if (this.logOn) {
 				this.logToggleBtn.innerHTML = 'toggle_on';
 				this.logToggleBtn.title = 'log_off';
 			} else {
@@ -539,7 +539,29 @@
 			}
 		},
 		logClear: function () {
-			log('');
+			this.log('');
+		},
+		logUpload: function () {
+			if (this.logServer.value === '' || this.logArr === []) {
+				return;
+			}
+			var blob = new Blob(this.logArr, {type: "text/plain"});
+			var formData = new FormData();
+			var logName = "volog_" + Date.parse(new Date()) + ".txt";
+			formData.append("fileToUpload", blob, logName);
+
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", this.logServer.value);
+			xhr.onreadystatechange = function() {
+			  if (xhr.readyState == 4) {
+				if (xhr.status == 200) {
+				  alert('Upload ' + logName + ' success.');
+				} else {
+				  alert('Upload ' + logName + ' failed: ' + xhr.response);
+				}
+			  }
+			}
+			xhr.send(formData);
 		},
 		reset: function () {
 			this.playBtn.innerHTML = "play_arrow";
