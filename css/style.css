@@ -4,6 +4,8 @@ body {
     font-size: 1.5em;
     padding: 0;
     margin: 0;
+	width: 100%;
+	height: 100%;
     overflow: auto;
     background-color: #222222;
     color: silver;
@@ -24,6 +26,11 @@ body:after {
     z-index: -1;
 }
 
+.wrap {
+	width: 100%;
+	height: 100%;
+}
+
 h1, h2, h3, h4, h5, h6 {
     font-family: sans-serif;
     text-align: center;
@@ -37,18 +44,13 @@ p {
     margin: 8px 0;
 }
 
-video {
-    width: 100%;
-	height: 428px;
-    margin: 0;
-	padding: 0;
-    display: block;
+.out {
+	width: 100%;
+	display: -webkit-box;
 }
 
 .left, .right {
-    float: left;
     padding: 0;
-	height: 510px;
     box-sizing: border-box;
 	-webkit-user-select: none;
     -moz-user-select: none;
@@ -57,21 +59,29 @@ video {
 }
 
 .left {
-    width: 60%;
+    width: 67%;
 }
 
 .right {
-    width: 40%;
+    width: 33%;
     font-size: 0.9em;
 	position: relative;
 }
 
 .log-field {
-	margin-right: 10px;
 	padding: 0 0 0 20px;
+	position: absolute;
+	top: 0;
+	bottom: 30px;
+	left: 0;
+	right: 10px;
 }
 
-.log-button {
+.log-btns {
+	z-index: 99999;
+}
+
+.logToggle, .clearLogBtn {
 	border: none;
 	background-color: transparent;
 	color: white;
@@ -89,20 +99,25 @@ video {
 
 .logs {
     overflow: auto;
-    height: 435px;
+	padding-left: 20px;
+	position: absolute;
+	top: 26px;
+	bottom: 0;
+	left: 0;
+	right: 0;
     font-family: monospace;
 }
 
 .logCloud {
 	width: 98%;
 	position: absolute;
-	bottom: 5px;
+	bottom: 0px;
 	display: inline-flex;
 	justify-content: space-between;
 }
 
 .logServer {
-	width: 88%;
+	width: 85%;
 }
 
 .progress {
@@ -134,10 +149,13 @@ video {
 
 .controls-left {
 	float: left;
+	width: 80%;
 }
 
 .controls-right {
 	float: right;
+	width: 20%;
+	text-align: right;
 	/*
 	display: inline-flex;
 	flex-wrap: wrap;
@@ -226,13 +244,24 @@ video {
 	margin: 10px 0 0 10px;
 	padding: 0;
 	width: 90%;
-	height: 428px;
+	height: 0px;
+	padding-bottom: 50%;
 	position: relative;
+}
+
+video {
+    width: 100%;
+	height: 100%;
+	position: absolute;
+	object-fit: contain;
+    margin: 0;
+	padding: 0;
+    display: block;
 }
 
 .bufferingSpinner {
   width: 100%;
-  height: 428px;
+  height: 100%;
   position: absolute;
   top: 0;
   display: none;
@@ -243,7 +272,7 @@ video {
 .spinnerSvg {
   animation: rotate 2s linear infinite;
   transform-origin: center center;
-  width: 100px;
+  width: 20%;
 }
 
 .spinnerPath {
