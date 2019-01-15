@@ -37,7 +37,7 @@
 		];
 
     var player = null;
-
+	var canPlay = false;
     /**
      * Creates HTML video tag and adds all event listeners
      */
@@ -102,7 +102,10 @@
 			}
 			controls.log(msg);
         };
-
+		_player.oncanplay = function() {
+			canPlay = true; 
+			controls.log('open finished');
+		};
         return _player;
     }
 	
@@ -128,6 +131,7 @@
      * Function to load source.
      */
     function load(source) {
+		canPlay = false;
         player.poster = source.poster || '';
         player.src = source.url || '';
         player.load();
@@ -147,6 +151,9 @@
     }
     
 	function playPause() {
+		if(!canPlay) {
+			return;
+		}
 		if(player.paused) {
 			play();
 		}else {
@@ -402,7 +409,6 @@
 
         updateProgress: function (elapsed, total) {
             var progress = 100 * elapsed / total;
-
             this.barEl.style.width = progress + '%';
         },
 

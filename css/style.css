@@ -48,6 +48,7 @@ video {
 .left, .right {
     float: left;
     padding: 0;
+	height: 510px;
     box-sizing: border-box;
 	-webkit-user-select: none;
     -moz-user-select: none;
@@ -63,6 +64,11 @@ video {
     width: 40%;
     font-size: 0.9em;
 	position: relative;
+}
+
+.log-field {
+	margin-right: 10px;
+	padding: 0 0 0 20px;
 }
 
 .log-button {
@@ -83,13 +89,14 @@ video {
 
 .logs {
     overflow: auto;
-    height: 420px;
+    height: 435px;
     font-family: monospace;
 }
 
 .logCloud {
 	width: 98%;
-	margin-top: 5px;
+	position: absolute;
+	bottom: 5px;
 	display: inline-flex;
 	justify-content: space-between;
 }
