@@ -162,11 +162,12 @@
 	}
 	
     function stop() {
-        player.pause();
-        player.currentTime = 0;
-        setPlaybackRate(1);
-		controls.playBtn.innerHTML = "play_arrow";
-		controls.playBtn.title = "play";
+		player.src = '';
+		player.poster = '';
+        player.removeAttribute('src');
+		player.removeAttribute('poster');
+		progress.reset();
+		controls.reset();
     }
 	
 	function end() {
@@ -295,6 +296,9 @@
 	}
 	
 	function seek(event) {
+		if(!canPlay) {
+			return;
+		}
 		var e = event || window.event;
 		var rect = progress.dom.getBoundingClientRect();
 		var offsetX = e.clientX - rect.left;
@@ -488,7 +492,7 @@
 			this.bufferInterval = setInterval(this.bufferControl.bind(this), 1000);
 		},
 		playTimeRefresh: function () {
-			if (player) {
+			if (player && player.src) {
 				var currentT = player.currentTime ? (player.currentTime).toFixed(0) : 0;
 				var durationT = player.duration ? (player.duration).toFixed(0) : 0;
 				var currentTH = Math.floor(currentT/3600);
@@ -512,7 +516,7 @@
 			}
 		},
 		bufferControl: function () {
-			if(player) {
+			if(player && player.src) {
 				if(getValidBufferDuration() > 1 || player.ended) {
 					this.bufferingSpinner.style.display = 'none';
 				}else{
@@ -572,6 +576,10 @@
 		reset: function () {
 			this.playBtn.innerHTML = "play_arrow";
 			this.playBtn.title = "play";
+			setPlaybackRate(1);
+			this.playTimeTip.innerHTML = "00:00 / 00:00";
+			this.bufferingSpinner.style.display = 'none';
+			canPlay = false;
 		}
 
 	}
