@@ -1,4 +1,7 @@
-/* fallback */
+/* Note1: see codepoints for more icons */
+/* Note2: see http://google.github.io/material-design-icons/#icon-images-for-the-web
+ * for more information if you don't know how to use material icons
+ */
 @font-face {
   font-family: 'Material Icons';
   font-style: normal;
