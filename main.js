@@ -4,6 +4,9 @@
      * playlist
      */
     var playList = [
+			{
+				url: 'https://t.bwzybf.com/2018/11/29/uPBoZ55x2QNMy84G/playlist.m3u8'
+			},
 			{	
 				url: 'http://10.2.68.6:9001/localfile/4K/10-Incredible-4K-Ultra-HD-Videos-YouTube_0.mp4'
 			},

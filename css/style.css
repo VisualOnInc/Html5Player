@@ -46,7 +46,9 @@ p {
 
 .out {
 	width: 100%;
+	display: box;
 	display: -webkit-box;
+	display: -moz-box;
 }
 
 .left, .right {
