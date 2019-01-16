@@ -329,13 +329,18 @@
 			if (i === playList.length) {
 				controls.log('there is no valid link in the play list');
 				stop();
-				player.removeEventListener('error', playValid_.bind(playValid));
+				player.removeEventListener('error', playValid_);
 				return;
 			}
 			playNext();
 			i++;
 		}
-		player.addEventListener('error', playValid_.bind(this));
+		player.addEventListener('error', playValid_);
+		function removeE () {
+			player.removeEventListener('error', playValid_);
+			player.removeEventListener('canplay', removeE);
+		}
+		player.addEventListener('canplay', removeE);
 		
 		/*
 		var i = 0;
@@ -399,8 +404,8 @@
 	}
 
 	//volume slide drag
-	var volumeInterval;		
 	function volumerSlider(event) {
+		var volumeInterval;
 		controls.controlBar.addEventListener('mousemove', getVolumeMoveX);
 		volumeInterval = setInterval(function(){
 			var offsetX = controls.volumeMouveX - controls.volumeStartX;
@@ -414,16 +419,17 @@
 			volumeIcon();
 		},50);
 		document.addEventListener('mouseup', volumeMoveEnd);
-	}
-	function getVolumeMoveX(event) {
+	
+		function getVolumeMoveX(event) {
 		var e = event || window.event;
 		e.preventDefault();
 		controls.volumeMouveX = e.clientX;
-	}
-	function volumeMoveEnd() {
-		controls.controlBar.removeEventListener('mousemove', getVolumeMoveX);
-		clearInterval(volumeInterval);
-		document.removeEventListener('mouseup', volumeMoveEnd);
+		}
+		function volumeMoveEnd() {
+			controls.controlBar.removeEventListener('mousemove', getVolumeMoveX);
+			clearInterval(volumeInterval);
+			document.removeEventListener('mouseup', volumeMoveEnd);
+		}
 	}
 	
 	/**
