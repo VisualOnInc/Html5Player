@@ -315,10 +315,45 @@
 	
 	function playPrevious() {
 		changeSource(-1);
+		controls.log('play the previous');
 	}
 	
 	function playNext() {
 		changeSource(1);
+		controls.log('play the next');
+	}
+	
+	function playValid () {
+		var i = 0;
+		function playValid_ () {
+			if (i === playList.length) {
+				controls.log('there is no valid link in the play list');
+				stop();
+				player.removeEventListener('error', playValid_.bind(playValid));
+				return;
+			}
+			playNext();
+			i++;
+		}
+		player.addEventListener('error', playValid_.bind(this));
+		
+		/*
+		var i = 0;
+		function playValid_ () {
+			if (canPlay) {
+				return;
+			}
+			if(i === playList.length) {
+				controls.log('there is no valid link in the play list');
+				stop();
+				return;
+			}
+			playNext();
+			i++;
+			setTimeout(playValid_, 10000);
+		}
+		setTimeout(playValid_, 10000);
+		*/
 	}
 	
 	/**
@@ -644,7 +679,9 @@
         player = createPlayer();
         document.querySelector('.videoPlayer').appendChild(player);
 		
+		controls.logOn = true;
 		load(playList_[0]);
+		playValid();
 		
 		document.body.addEventListener('unload', onUnload);
     };
