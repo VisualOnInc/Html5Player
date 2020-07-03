@@ -13,3 +13,4 @@ supported link:
 it uses the native video tag of browser, so it supports what browser supports.
 1. on safari / Edge, it supports hls(.m3u8) and PD(.mp4)
 2. on chrome / firefox / Opera, it supports PD(.mp4)
+
